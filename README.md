@@ -20,12 +20,12 @@ Download "QualityTrim.R" and "qscores.txt", and optionally the example input fil
   
   Usage: 
   
-```Rscript QualityTrim.R -i <input fastq file> -s <qscore file> -t <threshold cutoff score> -f <output file format {fastq, fasta, both}> -m <minimum read length> -o <output file base name>```
+```Rscript QualityTrim.R -i <input fastq file> -s <qscore file> -t <threshold cutoff score> -w <sliding window size> -f <output file format {fastq, fasta, both}> -m <minimum read length> -o <output file base name>```
   
   
   Example: 
   
-```Rscript QualityTrim.R -i example.fastq -s qscore.txt -t 25 -f fastq -m 10 -o outputfile```
+```Rscript QualityTrim.R -i example.fastq -s qscore.txt -t 25 -w 4 -f both -m 10 -o outputfile```
   
   An example output is shown as output_R.fasta and output_R.fastq
 
