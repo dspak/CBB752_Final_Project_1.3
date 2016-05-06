@@ -50,7 +50,9 @@ option_list = list(
               metavar="character"),
   make_option(c("-o", "--out"), type="character", 
               default="output_R", help="output file base name, [default= %default]", 
-              metavar="character")
+              metavar="character"),
+  make_option(c("-w", "--window"), type="integer", default=4, 
+              help="sliding window size", metavar="character")
 ); 
 
 opt_parser = OptionParser(option_list=option_list);
@@ -65,7 +67,7 @@ opt = parse_args(opt_parser);
 # outbase <- "test"
 
 # Trim function
-Trim <- function(infile, scorefile, threshold, minimum, outputtype, outbase) {
+Trim <- function(infile, scorefile, threshold, window, minimum, outputtype, outbase) {
   
   # read in and format fastq file
   input <- readLines(infile)
@@ -90,7 +92,7 @@ Trim <- function(infile, scorefile, threshold, minimum, outputtype, outbase) {
   cut.logical <- vector("list", length(phred.scores))
   for ( i in 1:length(phred.scores)) {
     for (j in 1:length(phred.scores[[i]])){
-      cut.logical[[i]][j] <- sum(phred.scores[[i]][j:(j+3)])/4 < threshold
+      cut.logical[[i]][j] <- sum(phred.scores[[i]][j:(j+(window-1))])/window < threshold
         }
     }
   
@@ -104,8 +106,8 @@ Trim <- function(infile, scorefile, threshold, minimum, outputtype, outbase) {
   # trim sequence and qual scores
   cut.loc.vec <- unlist(cut.loc)
   for (i in 1:length(cut.loc.vec)){
-    fastq.split[[(i*4-2)]] <- fastq.split[[(i*4-2)]][1:(cut.loc.vec[i]+1)]
-    fastq.split[[(i*4)]] <- fastq.split[[(i*4)]][1:(cut.loc.vec[i]+1)]
+    fastq.split[[(i*4-2)]] <- fastq.split[[(i*4-2)]][1:(cut.loc.vec[i]+(as.integer(window/2)-1))]
+    fastq.split[[(i*4)]] <- fastq.split[[(i*4)]][1:(cut.loc.vec[i]+(as.integer(window/2)-1))]
   }
   
   # remove sequences shorter than the minimum length
@@ -163,7 +165,7 @@ Trim <- function(infile, scorefile, threshold, minimum, outputtype, outbase) {
   }
 }
 
-Trim(opt$input, opt$score, opt$threshold, opt$minimum, opt$format, opt$out)
+Trim(opt$input, opt$score, opt$threshold, opt$window, opt$minimum, opt$format, opt$out)
 
 # return warnings to previous setting
 options(warn = oldw)  
